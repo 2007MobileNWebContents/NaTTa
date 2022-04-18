@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="reservationMapper">
+	
+	<resultMap type="Reservation" id="reservationResultMap">
+		<result property="reservationCode" column="RESERVATION_CODE"></result>
+		<result property="artistName" column="ARTIST_NAME"></result>
+		<result property="reservationDate" column="RESERVATION_DATE"></result>
+		<result property="reservationTime" column="RESERVATION_TIME"></result>
+		<result property="originalFilename" column="ORIGINAL_FILENAME"></result>
+		<result property="renameFilename" column="RENAME_FILENAME"></result>
+		<result property="tattooSize" column="TATTOO_SIZE"></result>
+		<result property="shopName" column="SHOP_NAME"></result>
+		<result property="customerId" column="CUSTOMER_ID"></result>
+		<result property="artistId" column="ARTIST_ID"></result>
+	</resultMap>
+
+	<insert id="insertReservation">
+		INSERT INTO RESERVATION
+		VALUES(RESERVATION_SEQ.NEXTVAL,#{artistName},#{reservationDate},#{reservationTime},#{address},#{originalFilename},#{renameFilename},#{tattooSize},#{request},#{style},#{part},#{price},'0',#{shopName},#{customerId},#{artistId})
+	</insert>
+	
+	<select id="selectListDate" resultMap="reservationResultMap">
+		SELECT RESERVATION_DATE FROM
+		(SELECT RESERVATION_DATE, COUNT(*) AS CC
+		FROM RESERVATION
+		GROUP BY RESERVATION_DATE,ARTIST_ID
+		HAVING ARTIST_ID = #{artistId})
+		WHERE CC=4
+	</select>
+	
+	<select id="selectListTime" resultMap="reservationResultMap">
+		SELECT RESERVATION_TIME FROM RESERVATION
+		WHERE ARTIST_ID = #{artistId} and RESERVATION_DATE = #{reservationDate}
+	</select>
+	
+	
+	
+</mapper>

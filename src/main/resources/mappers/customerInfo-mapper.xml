@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerInfoMapper">
+
+	<resultMap type="Customer" id="customerResultMap">
+		<result property="customerId" column="CUSTOMER_ID"></result>
+		<result property="customerName" column="CUSTOMER_NAME"></result>
+		<result property="enrollDate" column="ENROLL_DATE"></result>
+		<result property="customerProfile" column="CUSTOMER_PROFILE"></result>
+	</resultMap>
+	
+	<resultMap type="Following" id="followingResultMap">
+		<result property="customerId" column="CUSTOMER_ID"></result>
+		<result property="artistId" column="ARTIST_ID"></result>
+		<result property="myReprofile" column="MY_REPROFILE"></result>
+		<result property="myInfo" column="MY_INFO"></result>
+	</resultMap>
+	
+	<resultMap type="Review" id="ReviewResultMap">
+		<result property="reviewCode" column="REVIEW_CODE"></result>
+		<result property="customerId" column="CUSTOMER_ID"></result>
+		<result property="artistId" column="ARTIST_ID"></result>
+		<result property="reviewContents" column="REVIEW_CONTENTS"></result>
+		<result property="reviewPhoto" column="REVIEW_PHOTO"></result>
+		<result property="reviewStar" column="REVIEW_STAR"></result>
+		<result property="reviewCreateDate" column="REVIEW_CREATEDATE"></result>
+		<result property="reviewModifyDate" column="REVIEW_MODIFYDATE"></result>
+		<result property="reviewHit" column="REVIEW_HITS"></result>
+		<result property="myProfile" column="MY_PROFILE"></result>
+		<result property="myReProfile" column="MY_REPROFILE"></result>
+		<result property="reservationCode" column="RESERVATION_CODE"></result>
+	</resultMap>
+	
+	<resultMap type="Reservation" id="reservationResultMap">
+		<result property="reservationCode" column="RESERVATION_CODE"></result>
+		<result property="artistName" column="ARTIST_NAME"></result>
+		<result property="reservationDate" column="RESERVATION_DATE"></result>
+		<result property="originalFilename" column="ORIGINAL_FILENAME"></result>
+		<result property="renameFilename" column="RENAME_FILENAME"></result>
+		<result property="tattooSize" column="TATTOO_SIZE"></result>
+		<result property="shopName" column="SHOP_NAME"></result>
+		<result property="customerId" column="CUSTOMER_ID"></result>
+		<result property="artistId" column="ARTIST_ID"></result>
+		<result property="artistProfile" column="MY_REPROFILE"></result>
+		<result property="reservationTime" column="RESERVATION_TIME"></result>
+	</resultMap>
+	
+	<update id="modifyCusotmer">
+		UPDATE CUSTOMER
+		<set>
+		<if test="password != ''">
+			PASSWORD = #{password},
+		</if>
+		<if test="email != null">
+			EMAIL = #{email},
+		</if>
+		<if test="address != ',,,'">
+			ADDRESS = #{address},
+		</if>
+		<if test="customerProfile != null">
+			CUSTOMER_PROFILE = #{customerProfile},
+		</if>
+		
+		<if test="phone != null">
+			PHONE = #{phone}
+		</if>
+		</set>
+		WHERE CUSTOMER_ID = #{customerId}
+	</update>
+	
+	<select resultMap="customerResultMap" id="dupPwd">
+		SELECT * FROM CUSTOMER
+		WHERE CUSTOMER_ID = #{customerId} AND PASSWORD = #{password}
+	</select>
+	
+	<select resultMap="followingResultMap" id="selectListFollowing">
+		SELECT * FROM FOLLOWING OUTER LEFT JOIN ARTISTINFO USING(ARTIST_ID) WHERE CUSTOMER_ID = #{customerId}
+	</select>
+	
+	<delete id="deleteFollowing">
+		DELETE FROM FOLLOWING WHERE CUSTOMER_ID = #{customerId} AND ARTIST_ID = #{artistId}
+	</delete>
+	
+	<select id="selectListReview" resultMap="ReviewResultMap">
+		SELECT * FROM REVIEW LEFT OUTER JOIN ARTISTINFO USING(ARTIST_ID) WHERE CUSTOMER_ID = #{customerId}
+	</select>
+	
+	<update id="modifyReview">
+		UPDATE REVIEW SET REVIEW_CONTENTS = #{reviewContents} , REVIEW_STAR = #{reviewStar} , REVIEW_MODIFYDATE = SYSDATE , REVIEW_PHOTO = #{reviewPhoto} WHERE REVIEW_CODE = #{reviewCode}
+	</update>
+	
+	<delete id="deleteReview">
+		DELETE FROM REVIEW
+		WHERE REVIEW_CODE = #{reviewCode}
+	</delete>
+	
+	<select id="selectListReservation" resultMap="reservationResultMap">
+		SELECT * FROM RESERVATION join artistInfo using(artist_Id)
+		WHERE CUSTOMER_ID = #{customerId}
+	</select>
+	
+	<select id="dupReview" resultMap="ReviewResultMap">
+		SELECT * FROM REVIEW
+		WHERE RESERVATION_CODE = #{reservationCode}
+	</select>
+	
+	<insert id="insertReview">
+		INSERT INTO REVIEW VALUES(#{reviewCode},#{reviewContents},#{reviewPhoto},#{reviewStar},SYSDATE,SYSDATE,0,#{artistId},#{customerId},#{reservationCode})
+	</insert>
+	
+	<delete id="deleteResvertion">
+		DELETE FROM RESERVATION WHERE RESERVATION_CODE = #{reservationCode}
+	</delete>
+	
+	<select id="selectOneReservation" resultMap="reservationResultMap">
+		SELECT * FROM RESERVATION
+		WHERE RESERVATION_CODE = #{reservationCode}
+	</select>
+	
+	<delete id="deleteCustomer">
+		DELETE FROM CUSTOMER
+		WHERE CUSTOMER_ID = #{customerId}
+	</delete>
+</mapper>

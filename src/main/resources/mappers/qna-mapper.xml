@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="qnaMapper">
+
+	<resultMap type="QNA" id="qnaResultMap">
+	    <result property="qnaCode" column="QNA_CODE"/>
+		<result property="qnaTitle" column="QNA_TITLE"/>
+		<result property="qnaContents" column="QNA_CONTENTS"/>
+		<result property="qnaWriter" column="QNA_WRITER"/>
+		<result property="qnaCreateDate" column="QNA_CREATEDATE"/>
+		<result property="qnaModifyDate" column="QNA_MODIFYDATE"/>
+		<result property="qnaHits" column="QNA_HITS"/>
+		<result property="onOff" column="ON_OFF"/>
+		<result property="artistId" column="ARTIST_ID"/>
+		<result property="customerId" column="CUSTOMER_ID"/>
+	</resultMap>
+	
+	<resultMap type="QnaComment" id="qnacommentResultMap">
+		<result property="qcCode" column="QC_CODE"/>
+		<result property="qcContents" column="QC_CONTENTS"/>
+		<result property="qcWriter" column="QC_WRITER"/>
+		<result property="qcCreateDate" column="QC_CREATEDATE"/>
+		<result property="qcModifyDate" column="QC_MODIFYDATE"/>
+		<result property="onOff" column="ON_OFF"/>
+		<result property="qnaCode" column="QNA_CODE"/>
+	</resultMap>
+	
+	<insert id="insertQna">
+		INSERT INTO QNA
+		VALUES(QNA_SEQ.NEXTVAL,#{qnaTitle},#{qnaContents},#{qnaWriter},SYSDATE,SYSDATE,#{qnaHits},#{onOff})
+	</insert>
+	
+	<select id="selectList" resultMap="qnaResultMap">
+		SELECT * FROM QNA
+		ORDER BY QNA_CODE DESC
+	</select>
+	
+	<select id="getListCount" resultType="int">
+		SELECT COUNT(*)
+		FROM QNA
+	</select>
+	
+	<select id="selectOne" resultMap="qnaResultMap"> 
+		SELECT * FROM QNA
+		WHERE QNA_CODE = #{qnaCode}
+	</select>
+	
+	<insert id="insertQnaComment">
+		INSERT INTO QNA_COMMENT
+		VALUES(QC_SEQ.NEXTVAL, #{qcContents},#{qcWriter},SYSDATE,SYSDATE,DEFAULT,#{qnaCode})
+	</insert>
+	
+	<select id="selectQnacommentList" resultMap="qnacommentResultMap">
+		SELECT * FROM QNA_COMMENT
+		WHERE QNA_CODE = #{qnaCode}
+		ORDER BY QC_CODE DESC
+	</select>
+	
+	<update id="updateCount">
+		UPDATE QNA
+		SET QNA_HITS = QNA_HITS + 1
+		WHERE QNA_CODE = #{qnaCode}
+	</update>
+	
+	<delete id="deleteQna">
+		DELETE QNA
+		WHERE QNA_CODE = #{qnaCode}
+	</delete>
+	
+	<update id="updateQna">
+		UPDATE QNA
+		SET QNA_TITLE = #{qnaTitle}, QNA_CONTENTS = #{qnaContents}, QNA_MODIFYDATE = SYSDATE
+		WHERE QNA_CODE = #{qnaCode}
+	</update>
+</mapper>

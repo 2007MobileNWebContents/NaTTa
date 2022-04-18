@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="artistMapper">
+	
+	<resultMap type="Artist" id="artistResultMap">
+		<result property="artistId" column="ARTIST_ID"></result>
+		<result property="artistName" column="ARTIST_NAME"></result>
+		<result property="workAddress" column="WORK_ADDRESS"></result>
+		<result property="enrollDate"    column="ENROLL_DATE"></result>
+		<result property="businessNo"    column="BUSINESS_NO"></result>
+		<result property="enrollStatus"    column="ENROLL_STATUS"></result>
+	</resultMap>
+
+	<select id="selectOne" resultMap="artistResultMap">
+		SELECT * FROM ARTIST
+		WHERE ARTIST_ID=#{artistId} AND PASSWORD=#{password}
+	</select>
+	
+	<insert id="insertArtist">
+		INSERT INTO ARTIST
+	 	VALUES (#{artistId},#{password},#{password2},#{artistName},#{age},#{gender},#{phone},#{email2},#{workAddress},SYSDATE,#{businessNo},#{enrollStatus})
+	</insert>
+	 
+	 <select id="checkIdDup" resultType="int">
+	 	SELECT COUNT(*) FROM ARTIST
+	 	WHERE ARTIST_ID = #{artistId}
+	 </select>
+	 
+	 <select id="checkEmailDup" resultType="int">
+	 	SELECT COUNT(*) FROM ARTIST
+	 	WHERE Email = #{email2}
+	 </select>
+	
+	<select id="selectOneArtist" resultMap="artistResultMap">
+		SELECT * FROM ARTIST 
+		WHERE ARTIST_ID = #{artistId}
+	</select>	 	
+</mapper>

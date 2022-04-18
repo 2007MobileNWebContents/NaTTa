@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL"></setting>
+	</settings>
+
+   <typeAliases>
+		<typeAlias type="com.kh.natta.artist.domain.Artist" alias="Artist"/>
+		<typeAlias type="com.kh.natta.customer.domain.Customer" alias="Customer"/>
+		<typeAlias type="com.kh.natta.reservation.domain.Reservation" alias="Reservation"/>
+		<typeAlias type="com.kh.natta.ArtistInfo.domain.ArtistInfo" alias="ArtistInfo"/>
+		<typeAlias type="com.kh.natta.customDesign.domain.CustomDesign" alias="CustomDesign"/>
+		<typeAlias type="com.kh.natta.customDesign.domain.CustomComment" alias="CustomComment"/>
+		<typeAlias type="com.kh.natta.chat.domain.Chat" alias="Chat"/>
+		<typeAlias type="com.kh.natta.chat.domain.ChattingRoom" alias="ChattingRoom"/>
+		<typeAlias type="com.kh.natta.notice.domain.Notice" alias="Notice"/>
+		<typeAlias type="com.kh.natta.qna.domain.Qna" alias="Qna"/>
+		<typeAlias type="com.kh.natta.artistWork.domain.ArtistWork" alias="ArtistWork"/>
+		<typeAlias type="com.kh.natta.qna.domain.QnaComment" alias="QnaComment"/>
+		<typeAlias type="com.kh.natta.ArtistInfo.domain.ArtistInfoPrice" alias="ArtistInfoPrice"/>
+		<typeAlias type="com.kh.natta.customerInfo.domain.Following" alias="Following"/>
+		<typeAlias type="com.kh.natta.ArtistInfo.domain.ArtistFollow" alias="ArtistFollow"/>
+		<typeAlias type="com.kh.natta.customerInfo.domain.Review" alias="Review"/>
+		<typeAlias type="com.kh.natta.chat.domain.ImgPath" alias="ImgPath"/>
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="mappers/artist-mapper.xml"/>
+		<mapper resource="mappers/customer-mapper.xml"/>
+		<mapper resource="mappers/reservation-mapper.xml"/>
+		<mapper resource="mappers/artistInfo-mapper.xml"/>
+		<mapper resource="mappers/customdesign-mapper.xml"/>
+		<mapper resource="mappers/chat-mappers.xml"/>
+		<mapper resource="mappers/notice-mapper.xml"/>
+		<mapper resource="mappers/qna-mapper.xml"/>
+		<mapper resource="mappers/artistInfoPrice-mapper.xml"/>
+		<mapper resource="mappers/artistWork-mapper.xml"/>
+		<mapper resource="mappers/customerInfo-mapper.xml"/>		
+	</mappers>
+	
+
+
+</configuration>

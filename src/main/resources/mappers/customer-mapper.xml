@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerMapper">
+	
+	<resultMap type="Customer" id="customerResultMap">
+		<result property="customerId" column="CUSTOMER_ID"></result>
+		<result property="customerName" column="CUSTOMER_NAME"></result>
+		<result property="enrollDate" column="ENROLL_DATE"></result>
+		<result property="customerProfile" column="CUSTOMER_PROFILE"></result>
+	</resultMap>
+
+	<select id="selectOne" resultMap="customerResultMap">
+		SELECT * FROM CUSTOMER
+		WHERE CUSTOMER_ID=#{customerId} AND PASSWORD=#{password}
+	</select>
+	
+	<insert id="insertCustomer">
+		INSERT INTO CUSTOMER
+	 	VALUES (#{customerId},#{password},#{password2},#{customerName},#{age},#{gender},#{phone},#{email},#{address},SYSDATE,#{customerProfile})
+	</insert>
+	 
+	 <select id="checkIdDup" resultType="int">
+	 	SELECT COUNT(*) FROM CUSTOMER
+	 	WHERE CUSTOMER_ID = #{customerId}
+	 </select>
+	 
+	 <select id="checkEmailDup" resultType="int">
+	 	SELECT COUNT(*) FROM CUSTOMER
+	 	WHERE Email = #{email}
+	 </select>
+	 
+	 <!-- id 찾기 (이메일 인증) -->
+	 <select id="selectTwo" resultMap="customerResultMap">
+		SELECT * FROM CUSTOMER
+		WHERE CUSTOMER_NAME=#{customerName} AND EMAIL=#{email}
+	</select>
+	
+	<!-- pwd 찾기 (이메일 인증) -->
+	<select id="selectThree" resultMap="customerResultMap">
+		SELECT * FROM CUSTOMER
+		WHERE CUSTOMER_ID=#{customerId} AND CUSTOMER_NAME=#{customerName} AND EMAIL=#{email}
+	</select>
+	
+	<!-- id 찾기  (폰 인증) -->
+	<select id="selectFour" resultMap="customerResultMap">
+		SELECT * FROM CUSTOMER
+		WHERE CUSTOMER_NAME=#{customerName} AND PHONE=#{phone}
+	</select>
+	
+	<!-- 비밀번호 변경 -->
+<!-- 	<update id="update_pw"> parameterType="CUSTOMER"??
+	    UPDATE CUSTOMER SET PASSWORD = #{password}
+	    WHERE CUSTOMER_ID = #{customerId} AND CUSTOMER_NAME=#{customerName} AND EMAIL=#{email}
+	</update>  -->
+	
+</mapper>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ArtistInfoMapper">
+
+	<!-- Info Map -->
+	<resultMap type="ArtistInfo" id="artistInfoMap">
+		<result property="myProfile" column="MY_PROFILE"/>
+		<result property="myReProfile" column="MY_REPROFILE"/>
+		<result property="myInfo" column="MY_INFO"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="modifyDate" column="MODIFY_DATE"/>
+		<result property="workAddress" column="WORK_ADDRESS"/>
+		<result property="artistId" column="ARTIST_ID"/>
+	</resultMap>
+	
+	<!-- Follow Map -->
+	<resultMap type="ArtistFollow" id="followMap">
+		<result property="customerProfile" column="CUSTOMER_PROFILE"/>
+		<result property="customerId" column="CUSTOMER_ID"/>
+		<result property="artistId" column="ARTIST_ID"/>
+	</resultMap>
+	
+	<!-- Reservation Map -->
+	<resultMap type="Reservation" id="reservationResultMap">
+		<result property="reservationCode" column="RESERVATION_CODE"></result>
+		<result property="artistName" column="ARTIST_NAME"></result>
+		<result property="reservationDate" column="RESERVATION_DATE"></result>
+		<result property="reservationTime" column="RESERVATION_TIME"></result>
+		<result property="originalFilename" column="ORIGINAL_FILENAME"></result>
+		<result property="renameFilename" column="RENAME_FILENAME"></result>
+		<result property="tattooSize" column="TATTOO_SIZE"></result>
+		<result property="shopName" column="SHOP_NAME"></result>
+		<result property="customerId" column="CUSTOMER_ID"></result>
+		<result property="artistId" column="ARTIST_ID"></result>
+	</resultMap>
+	<resultMap type="Artist" id="artistResultMap">
+		<result property="artistId" column="ARTIST_ID"></result>
+		<result property="artistName" column="ARTIST_NAME"></result>
+		<result property="workAddress" column="WORK_ADDRESS"></result>
+		<result property="enrollDate"    column="ENROLL_DATE"></result>
+		<result property="businessNo"    column="BUSINESS_NO"></result>
+		<result property="enrollStatus"    column="ENROLL_STATUS"></result>
+		<result property="email2"    column="EMAIL"></result>
+	</resultMap>
+	<resultMap type="Review" id="ReviewResultMap">
+		<result property="reviewCode" column="REVIEW_CODE"></result>
+		<result property="customerId" column="CUSTOMER_ID"></result>
+		<result property="artistId" column="ARTIST_ID"></result>
+		<result property="reviewContents" column="REVIEW_CONTENTS"></result>
+		<result property="reviewPhoto" column="REVIEW_PHOTO"></result>
+		<result property="reviewStar" column="REVIEW_STAR"></result>
+		<result property="reviewCreateDate" column="REVIEW_CREATEDATE"></result>
+		<result property="reviewModifyDate" column="REVIEW_MODIFYDATE"></result>
+		<result property="reviewHit" column="REVIEW_HITS"></result>
+		<result property="myProfile" column="MY_PROFILE"></result>
+		<result property="myReProfile" column="MY_REPROFILE"></result>
+		<result property="reservationCode" column="RESERVATION_CODE"></result>
+		<result property="customerProfile" column="CUSTOMER_PROFILE"></result>
+	</resultMap>
+	<!-- select floor(sum(review_star/(select count(*) from review where artist_id='artist1'))) as avg from review where artist_id = 'artist1'; -->	
+	<select id="getStarAvg" resultType="float">
+		SELECT TRUNC(SUM(REVIEW_STAR/(SELECT COUNT(*) FROM REVIEW WHERE ARTIST_ID=#{ artistId })),2) AS avg 
+		FROM REVIEW 
+		WHERE ARTIST_ID = #{ artistId }
+	</select>
+	
+	
+	<select id="getFollowCount" resultType="int">
+		SELECT COUNT(*) 
+		FROM FOLLOWING
+		WHERE ARTIST_ID = #{ artistId }
+	</select>
+	<select id="getWorkCount" resultType="int">
+		SELECT COUNT(*)
+		FROM WORK
+		WHERE ARTIST_ID = #{ artistId }
+	</select>
+	<select id="getListCount" resultType="int">
+		SELECT COUNT(*)
+		FROM ARTISTINFO
+	</select>
+	<select id="getReviewListCount" resultType="int">
+		SELECT COUNT(*)
+		FROM REVIEW
+		WHERE ARTIST_ID = #{artistId}
+	</select>	
+	
+	<select id="selectListReview" resultMap="ReviewResultMap">
+		SELECT * FROM REVIEW JOIN CUSTOMER USING(CUSTOMER_ID)
+		WHERE ARTIST_ID = #{artistId} ORDER BY REVIEW_CODE DESC
+	</select>
+	
+	
+	<update id="updateStatus">
+		UPDATE RESERVATION SET STATUS = STATUS + 1 
+		WHERE RESERVATION_CODE = #{ reservationCode }
+	</update>
+	
+	<delete id="deleteStatus">
+		DELETE FROM RESERVATION
+		WHERE RESERVATION_CODE = #{ reservationCode }
+	</delete>
+	
+	<!-- 고객 예약 리스트 -->
+	<select id="selectReservationList" resultMap="reservationResultMap">
+		SELECT * FROM RESERVATION
+		WHERE ARTIST_ID = #{ artistId } ORDER BY RESERVATION_DATE DESC
+	</select>
+	
+	
+	
+	
+ 	<select id="selectArtistFollow" resultMap="followMap">
+		SELECT * 
+		FROM FOLLOWING JOIN CUSTOMER USING(CUSTOMER_ID)
+			LEFT OUTER JOIN ARTISTINFO USING(ARTIST_ID)
+		WHERE CUSTOMER_ID = #{ customerId } AND ARTIST_ID = #{ artistId }
+	</select>
+	
+	<!-- 팔로우 등록 -->
+	<insert id="insertArtistFollow">
+		INSERT INTO FOLLOWING
+		VALUES( #{customerId}, #{artistId})
+	</insert>
+	
+	
+	<delete id="deleteArtistFollow">
+		DELETE FROM FOLLOWING
+		WHERE CUSTOMER_ID = #{ customerId } AND ARTIST_ID = #{ artistId }
+	</delete>
+	
+	
+	
+	<!-- 아티스트 팔로우 리스트  -->
+	<select id="selectListArtistFollow" resultMap="followMap">
+		SELECT CUSTOMER_PROFILE, ARTIST_ID, CUSTOMER_ID
+		FROM FOLLOWING JOIN CUSTOMER USING(CUSTOMER_ID)
+				 LEFT OUTER JOIN ARTISTINFO USING(ARTIST_ID)
+		WHERE ARTIST_ID = #{artistId}
+	</select>
+	
+	
+	<!-- 아티스트정보 입력 -->
+	<insert id="insertArtistInfo">
+		INSERT INTO ARTISTINFO
+		VALUES(#{name}, #{myProfile}, #{myReProfile}, #{myInfo}, SYSDATE, SYSDATE, #{artistId})
+	</insert>
+	
+	
+	<!-- 아티스트 리스트  출력 -->
+	<select id="selectListArtist" resultMap="artistInfoMap">
+		SELECT *
+		FROM ARTISTINFO 
+		LEFT JOIN
+		(SELECT ARTIST_ID,COUNT(*)
+		AS COUNT FROM FOLLOWING GROUP BY ARTIST_ID) USING(ARTIST_ID)
+		WHERE ARTIST_ID NOT IN('admin') ORDER BY COUNT DESC
+	</select>
+	
+	<!-- 아티스트 1명 조회  -->
+	<select id="selectOneArtist" resultMap="artistInfoMap">
+		SELECT * FROM ARTISTINFO 
+		WHERE ARTIST_ID = #{artistId}
+	</select>
+	<!-- 아티스트 소개 업데이트 -->
+	<update id="updateArtistInfo">
+		UPDATE ARTISTINFO
+		SET NAME=#{name}, MY_PROFILE=#{myProfile}, MY_REPROFILE=#{myReProfile}, MY_INFO=#{myInfo},
+		CREATE_DATE = SYSDATE, MODIFY_DATE = SYSDATE
+		WHERE ARTIST_ID = #{artistId}
+	</update>
+	
+	<!-- 아티스트 회원 탈퇴 -->
+	<delete id="deleteArtist">
+	     DELETE FROM ARTIST
+	     WHERE ARTIST_ID = #{artistId}
+	</delete>
+	
+ 	<!-- 아티스트 정보 수정 -->
+	<update id="modifyArtistInfo">
+		UPDATE ARTIST
+		<set>
+		<if test="password != ''">
+			PASSWORD = #{password},
+		</if>
+		<if test="phone != null">
+			PHONE = #{phone},
+		</if>
+		<if test="email2 != null">
+			EMAIL = #{email2},
+		</if>
+		<if test="workAddress != ',,,'">
+			WORK_ADDRESS = #{workAddress}
+		</if>		
+		
+		</set>
+		WHERE ARTIST_ID = #{artistId}
+	</update> 
+	
+	<select resultMap="artistResultMap" id="selectOne">
+		SELECT * FROM ARTIST
+		WHERE ARTIST_ID = #{artistId}
+	</select>
+	
+	<select resultMap="artistResultMap" id="dupPwd2">
+		SELECT * FROM ARTIST
+		WHERE ARTIST_ID = #{artistId} AND PASSWORD = #{password}
+	</select>
+	
+	<!-- 작품 TOP10 -->
+	<select id="selectListArtistInfo" resultMap="artistInfoMap">
+		SELECT * FROM (SELECT ARTIST_ID,NAME,MY_REPROFILE,MY_INFO FROM WORK JOIN ARTISTINFO USING(ARTIST_ID)
+		GROUP BY ARTIST_ID,NAME,MY_REPROFILE,MY_INFO
+		ORDER BY COUNT(*) DESC)
+        <![CDATA[WHERE ROWNUM <=10]]>
+	</select>
+	<!-- 리뷰 TOP10 -->
+	<select id="selectListReviewInfo" resultMap="artistInfoMap">
+		SELECT * FROM (SELECT ARTIST_ID,NAME,MY_REPROFILE,MY_INFO FROM REVIEW JOIN ARTISTINFO USING(ARTIST_ID)
+		GROUP BY ARTIST_ID,NAME,MY_REPROFILE,MY_INFO
+		ORDER BY COUNT(*) DESC)
+        <![CDATA[WHERE ROWNUM <=10]]>
+	</select>
+	
+	<!-- 팔로우 TOP10 -->
+	<select id="selectListFollowInfo" resultMap="artistInfoMap">
+		SELECT * FROM (SELECT ARTIST_ID,NAME,MY_REPROFILE,MY_INFO FROM FOLLOWING JOIN ARTISTINFO USING(ARTIST_ID)
+		GROUP BY ARTIST_ID,NAME,MY_REPROFILE,MY_INFO
+		ORDER BY COUNT(*) DESC)
+        <![CDATA[WHERE ROWNUM <=10]]>
+	</select>
+	
+	
+</mapper>
